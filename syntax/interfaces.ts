@@ -54,7 +54,7 @@ mySearch = function (source: string, subString: string) {
     return result > -1;
 }
 // parameter type can be inferred
-mySearch = function (src, sub) {
+let yourSearch = <SearchFunc>function (src, sub) {
     let result = src.search(sub);
     return result > -1;
 }
@@ -87,3 +87,92 @@ interface ReadonlyStringArray {
 }
 let myROArray: ReadonlyStringArray = ['Alice', 'Bob'];
 // myROArray[2] = 'Mallory'; Error: indexer read-only
+
+// class types
+interface ClockInterface {
+    currentTime: Date;
+    setTime(d: Date);
+}
+class Clock implements ClockInterface {
+    currentTime: Date;
+    setTime(d: Date) {
+        this.currentTime = d;
+    }
+    constructor(h: number, m: number) { }
+}
+
+interface ClockConstructor {
+    new (hour: number, minute: number): TickClockInterface;
+}
+// class Clock1 implements ClockConstructor {
+//     currentTime: Date;
+//     constructor(h: number, m: number) { }
+// } Error: no match for signature new (hour: number, minute: number)
+interface TickClockInterface {
+    tick();
+}
+function createClock(ctor: ClockConstructor, hour: number, minute: number): TickClockInterface {
+    return new ctor(hour, minute);
+}
+class DigitalClock implements TickClockInterface {
+    constructor(h: number, m: number) { }
+    tick() {
+        console.log('beep beep');
+    }
+}
+class AnalogClock implements TickClockInterface {
+    constructor(h: number, m: string) { }
+    tick() {
+        console.log('tick tock');
+    }
+}
+let digital = createClock(DigitalClock, 12, 17);
+// let analog = createClock(AnalogClock, 12, 17); Error: AnalogClock is incompatible with ClockConstructor
+
+// extend interface
+interface Shape {
+    color: string;
+}
+interface PenStroke {
+    penWidth: number;
+}
+interface Square extends Shape, PenStroke {
+    sideLength: number;
+}
+// let sq: Square = {} as Square;
+let sq = <Square>{};
+sq.color = 'blue';
+sq.sideLength = 10;
+sq.penWidth = 5.0;
+
+// hybrid types
+interface Counter {
+    (start: number): string;
+    interval: number;
+    reset(): void;
+}
+function getCounter(): Counter {
+    let counter = <Counter>function (start: number) { };
+    counter.interval = 123;
+    counter.reset = function () { };
+    return counter;
+}
+let counter = getCounter();
+counter(10);
+counter.reset();
+counter.interval = 5.0;
+
+// interfaces extending classes
+class Control {
+    private state: any;
+}
+
+interface SelectableControl extends Control {
+    select(): void;
+}
+class Button extends Control implements SelectableControl {
+    select() { }
+}
+// class Image implements SelectableControl{
+//     select() {}
+// } Error: 'state' is missing
