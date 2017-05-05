@@ -67,14 +67,14 @@ let myArray: StringArray;
 myArray = ['Bob', 'Fred'];
 let myStr: string = myArray[0];
 
-class Animal {
+class Pet {
     name: string;
 }
-class Dog extends Animal {
+class Dog extends Pet {
     breed: string;
 }
 interface NotOkay {
-    // [x: number]: Animal; Error: return type of numeric indexer must be subtype of type returned from string indexer
+    // [x: number]: Pet; Error: return type of numeric indexer must be subtype of type returned from string indexer
     [x: string]: Dog;
 }
 interface NumberDictionary {
