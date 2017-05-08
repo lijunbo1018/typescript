@@ -147,3 +147,67 @@ let grid1 = new Grid(1.0);
 let grid2 = new Grid(5.0);
 console.log(grid1.calculateDistanceFromOrigin({ x: 10, y: 10 }));
 console.log(grid2.calculateDistanceFromOrigin({ x: 10, y: 10 }));
+
+// abstract class
+abstract class Abstract {
+    abstract makeSound(): void;
+    move(): void {
+        console.log('roaming the earth...');
+    }
+}
+// const ab = new Abstract(); Error: can not instantiate
+
+abstract class Department {
+    constructor(public name: string) { }
+    printName(): void {
+        console.log(`Department name: ${this.name}`);
+    }
+    abstract printMeeting(): void;
+}
+class AccountingDepartment extends Department {
+    constructor() {
+        super('Accounting and Auditing');
+    }
+    printMeeting(): void {
+        console.log('The Accounting Department meets each Monday at 10am.');
+    }
+    generateReports(): void {
+        console.log('Generating account reports...');
+    }
+}
+let department: Department;
+department = new AccountingDepartment();
+department.printName();
+department.printMeeting();
+// department.generateReports(); Error: method does not exist on declared abstract type
+
+class Waiter {
+    static standardGreeting = 'Hello, there';
+    greeting: string;
+    greet() {
+        if (this.greeting) {
+            return `Hello, ${this.greeting}`;
+        } else {
+            return Waiter.standardGreeting;
+        }
+    }
+}
+let waiter1: Waiter;
+waiter1 = new Waiter();
+
+let waiterMaker: typeof Waiter = Waiter;
+console.log(waiterMaker.standardGreeting);
+
+let waiter2: Waiter = new waiterMaker();
+console.log(waiter2.greet());
+
+// class as interface
+class Point2d {
+    x: number;
+    y: number;
+}
+
+interface Point3d extends Point2d {
+    z: number;
+}
+let point3d: Point3d = { x: 0, y: 0, z: 0 };
