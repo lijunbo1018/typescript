@@ -58,3 +58,49 @@ let genericString = new GenericType<string>();
 genericString.zeroValue = '0';
 genericString.add = (x, y) => x + y;
 console.log(genericString.add(genericString.zeroValue, '07'));
+
+// Generic Constraints
+interface Lengthwise {
+    length: number;
+}
+function loggingIdentity<T extends Lengthwise>(arg: T): T {
+    console.log(arg.length);
+    return arg;
+}
+// loggingIdentity(3); Error, number does not have length property
+loggingIdentity({ length: 10, value: 3 });
+
+function getProperty<T, K extends keyof T>(obj: T, key: K) {
+    return obj[key];
+}
+let x = { a: 1, b: 2, c: 3, d: 4 };
+getProperty(x, 'a');
+// getProperty(x, 'e'); Error: 'e' is not assignable to 'a' | 'b' | 'c' | 'd'
+
+// factory
+function create<T>(c: { new(): T; }): T {
+    return new c();
+}
+
+class BeeKeeper {
+    hasMask: boolean;
+}
+class ZooKeeper {
+    nametag: string;
+}
+class LegAnimal {
+    numLegs: number;
+}
+class Bee extends LegAnimal {
+    keeper: BeeKeeper;
+}
+class Lion extends LegAnimal {
+    keeper: ZooKeeper;
+}
+function createInstance<A extends LegAnimal>(c: new () => A): A {
+    return new c();
+}
+// createInstance(Lion).keeper.hasMask; Error: hasMask does not exist
+createInstance(Lion).keeper.nametag;
+createInstance(Bee).keeper.hasMask;
+// createInstance(Bee).keeper.nametag; Error: nametag does not exist
